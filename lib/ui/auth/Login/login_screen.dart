@@ -1,11 +1,19 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:todo/core/app_routes.dart';
 import 'package:todo/core/utils/image%20utils.dart';
 import 'package:todo/ui/widgets/coustme_text_form_field.dart';
 
 import '../../../core/utils/email validation.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   TextEditingController EmailController = TextEditingController();
+
   TextEditingController passWordController = TextEditingController();
 
   var formKey = GlobalKey<FormState>();
@@ -69,9 +77,24 @@ class LoginScreen extends StatelessWidget {
 
                   ElevatedButton(
                       onPressed: () {
-                        register();
+                        login(EmailController.text, passWordController.text);
                       },
                       child: Text('Login')),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Do not have account'),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pushReplacementNamed(
+                                context, AppRoutes.registerRoute);
+                          },
+                          child: Text(
+                            'Create account',
+                            style: TextStyle(fontSize: 16),
+                          ))
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -81,9 +104,19 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  void register() {
+  void login(String emailAddress, String password) async {
     if (formKey.currentState?.validate() == false) {
       return;
+    }
+    try {
+      final credential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: emailAddress, password: password);
+      Navigator.pushReplacementNamed(context, AppRoutes.homeRoute);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found' ||
+          e.code == 'No user found for that email.') {
+        print('Wrong email or password');
+      }
     }
   }
 }

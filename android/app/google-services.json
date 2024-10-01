@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "484262268685",
+    "project_id": "to-do-ddfca",
+    "storage_bucket": "to-do-ddfca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:484262268685:android:1be423d6d698152cf3aa44",
+        "android_client_info": {
+          "package_name": "com.example.todo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA35DNn-SdRMaAMkb4IC5_-TWKoN-yRQsE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
