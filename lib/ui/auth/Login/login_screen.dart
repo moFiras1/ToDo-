@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:todo/core/app_routes.dart';
+import 'package:todo/core/utils/dialog_utils.dart';
 import 'package:todo/core/utils/image%20utils.dart';
 import 'package:todo/ui/widgets/coustme_text_form_field.dart';
 
@@ -109,13 +110,25 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
     try {
+      DialogUtils.ShowLaodingDialog(context, 'please, wait..');
       final credential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: emailAddress, password: password);
-      Navigator.pushReplacementNamed(context, AppRoutes.homeRoute);
+      DialogUtils.hideDialog(context);
+      DialogUtils.showMessageDialog(context,
+          message: 'User logged in Scussessfully',
+          posActionTitle: 'OK', posAction: () {
+        Navigator.pushReplacementNamed(context, AppRoutes.homeRoute);
+      });
     } on FirebaseAuthException catch (e) {
+      DialogUtils.hideDialog(context);
+      print('ammmmmm hererererer${e.toString()}');
       if (e.code == 'user-not-found' ||
           e.code == 'No user found for that email.') {
-        print('Wrong email or password');
+        DialogUtils.showMessageDialog(
+          context,
+          message: 'Wrong Email or password',
+          posActionTitle: 'Try Agian',
+        );
       }
     }
   }

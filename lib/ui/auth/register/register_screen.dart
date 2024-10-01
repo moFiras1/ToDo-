@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:todo/core/utils/dialog_utils.dart';
 import 'package:todo/core/utils/image%20utils.dart';
 import 'package:todo/ui/widgets/coustme_text_form_field.dart';
 
@@ -154,20 +155,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
     try {
+      DialogUtils.ShowLaodingDialog(context, 'Create Account...');
       final credential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      Navigator.pushReplacementNamed(context, AppRoutes.LoginRoute);
+      DialogUtils.hideDialog(context);
+      DialogUtils.showMessageDialog(
+        context,
+        message: 'Registration Successfully',
+        posActionTitle: 'Login',
+        posAction: () {
+          Navigator.pushReplacementNamed(context, AppRoutes.LoginRoute);
+        },
+      );
     } on FirebaseAuthException catch (e) {
+      DialogUtils.hideDialog(context);
       if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
+        DialogUtils.showMessageDialog(context,
+            message: 'The password provided is too weak.',
+            posActionTitle: 'Try Again');
       } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
+        DialogUtils.showMessageDialog(context,
+            message:
+                'The account already exists for that email, try another account',
+            posActionTitle: 'OK');
       }
     } catch (e) {
-      print(e.toString());
+      DialogUtils.hideDialog(context);
+      DialogUtils.showMessageDialog(context,
+          message: e.toString(), posActionTitle: 'OK');
     }
   }
 }
