@@ -1,21 +1,20 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
 typedef Validator = String? Function(String?);
 
-class CoustmeTextFormField extends StatelessWidget {
+class CustomTextFormField extends StatelessWidget {
   String label;
 
   TextEditingController? controller;
 
-  TextInputType KeyBoardType;
+  TextInputType? KeyBoardType;
 
   Validator? validator;
 
   bool isSecureText;
 
-  CoustmeTextFormField(
+  CustomTextFormField(
       {required this.label,
       required this.KeyBoardType,
       this.isSecureText = false,
@@ -27,7 +26,7 @@ class CoustmeTextFormField extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 8),
       child: TextFormField(
-        style: TextStyle(color: Colors.black),
+        style: TextStyle(color: Colors.black, fontWeight: FontWeight.normal),
         controller: controller,
         keyboardType: KeyBoardType,
         obscureText: isSecureText,
@@ -39,7 +38,7 @@ class CoustmeTextFormField extends StatelessWidget {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(18),
-              borderSide: BorderSide(color: Colors.grey, width: 2)),
+              borderSide: BorderSide(color: Colors.blue, width: 2)),
           // enabledBorder: ,
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(18),

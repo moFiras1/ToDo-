@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo/core/utils/dialog_utils.dart';
 import 'package:todo/core/utils/image%20utils.dart';
+import 'package:todo/providers/app_auth_provider.dart';
 import 'package:todo/ui/widgets/coustme_text_form_field.dart';
 
 import '../../../core/app_routes.dart';
@@ -52,7 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   SizedBox(
                     height: 200,
                   ),
-                  CoustmeTextFormField(
+                  CustomTextFormField(
                     controller: fullNameController,
                     label: 'Full Name',
                     KeyBoardType: TextInputType.name,
@@ -66,7 +68,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return null;
                     },
                   ), //Full name
-                  CoustmeTextFormField(
+                  CustomTextFormField(
                     controller: userNameController,
                     label: 'User Name',
                     KeyBoardType: TextInputType.name,
@@ -77,7 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return null;
                     },
                   ), //user name
-                  CoustmeTextFormField(
+                  CustomTextFormField(
                     controller: EmailController,
                     label: 'E-mail Address',
                     KeyBoardType: TextInputType.emailAddress,
@@ -91,7 +93,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return null;
                     },
                   ), //email
-                  CoustmeTextFormField(
+                  CustomTextFormField(
                     controller: passWordController,
                     label: 'Password',
                     KeyBoardType: TextInputType.visiblePassword,
@@ -106,7 +108,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return null;
                     },
                   ), //password
-                  CoustmeTextFormField(
+                  CustomTextFormField(
                     controller: ConfirmPassWordController,
                     label: 'Confirm Password',
                     KeyBoardType: TextInputType.visiblePassword,
@@ -123,7 +125,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ), // confirm password
                   ElevatedButton(
                       onPressed: () {
-                        register(EmailController.text, passWordController.text);
+                        register(
+                            email: EmailController.text,
+                            password: passWordController.text,
+                            fullName: fullNameController.text,
+                            UserName: userNameController.text);
                       },
                       child: Text('Register')),
                   Row(
@@ -150,17 +156,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void register(String email, String password) async {
+  void register(
+      {required String email,
+      required String password,
+      required String fullName,
+      required String UserName}) async {
+    var authProvider = Provider.of<AppAuthProvider>(context, listen: false);
     if (formKey.currentState?.validate() == false) {
       return;
     }
     try {
       DialogUtils.ShowLaodingDialog(context, 'Create Account...');
-      final credential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      await authProvider.register(
+          email: email,
+          password: password,
+          fullName: fullName,
+          userName: UserName);
       DialogUtils.hideDialog(context);
       DialogUtils.showMessageDialog(
         context,
@@ -178,9 +189,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             posActionTitle: 'Try Again');
       } else if (e.code == 'email-already-in-use') {
         DialogUtils.showMessageDialog(context,
-            message:
-                'The account already exists for that email, try another account',
-            posActionTitle: 'OK');
+            message: 'email in use, try another account', posActionTitle: 'OK');
       }
     } catch (e) {
       DialogUtils.hideDialog(context);

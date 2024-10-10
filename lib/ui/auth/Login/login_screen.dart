@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo/core/app_routes.dart';
 import 'package:todo/core/utils/dialog_utils.dart';
 import 'package:todo/core/utils/image%20utils.dart';
+import 'package:todo/providers/app_auth_provider.dart';
 import 'package:todo/ui/widgets/coustme_text_form_field.dart';
 
 import '../../../core/utils/email validation.dart';
@@ -46,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     height: 200,
                   ),
-                  CoustmeTextFormField(
+                  CustomTextFormField(
                     controller: EmailController,
                     label: 'E-mail Address',
                     KeyBoardType: TextInputType.emailAddress,
@@ -60,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       return null;
                     },
                   ), //email
-                  CoustmeTextFormField(
+                  CustomTextFormField(
                     controller: passWordController,
                     label: 'Password',
                     KeyBoardType: TextInputType.visiblePassword,
@@ -106,24 +108,30 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void login(String emailAddress, String password) async {
+    var authProvider = Provider.of<AppAuthProvider>(context, listen: false);
     if (formKey.currentState?.validate() == false) {
       return;
     }
     try {
       DialogUtils.ShowLaodingDialog(context, 'please, wait..');
-      final credential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: emailAddress, password: password);
+
+      await authProvider.login(emailAddress, password);
       DialogUtils.hideDialog(context);
       DialogUtils.showMessageDialog(context,
           message: 'User logged in Scussessfully',
           posActionTitle: 'OK', posAction: () {
-        Navigator.pushReplacementNamed(context, AppRoutes.homeRoute);
+        Navigator.pushReplacementNamed(
+          context,
+          AppRoutes.homeRoute,
+        );
       });
     } on FirebaseAuthException catch (e) {
       DialogUtils.hideDialog(context);
       print('ammmmmm hererererer${e.toString()}');
       if (e.code == 'user-not-found' ||
-          e.code == 'No user found for that email.') {
+          e.code == 'No user found for that email.' ||
+          e.code == 'invalid-credential' ||
+          e.code == 'wrong-password') {
         DialogUtils.showMessageDialog(
           context,
           message: 'Wrong Email or password',

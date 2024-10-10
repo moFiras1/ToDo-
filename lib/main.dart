@@ -1,10 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo/core/Theme/app_Theme.dart';
 import 'package:todo/core/app_routes.dart';
+import 'package:todo/providers/app_auth_provider.dart';
 import 'package:todo/ui/auth/Login/login_screen.dart';
 import 'package:todo/ui/auth/register/register_screen.dart';
 import 'package:todo/ui/home/home_screen.dart';
+import 'package:todo/ui/splash-screen/splash_screen.dart';
 
 import 'firebase_options.dart';
 
@@ -13,7 +16,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+      create: (context) => AppAuthProvider(), child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -23,6 +27,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       onGenerateRoute: (settings) {
         switch (settings.name) {
@@ -44,9 +49,15 @@ class MyApp extends StatelessWidget {
                 builder: (context) => LoginScreen(),
               );
             }
+          case AppRoutes.splashRoute:
+            {
+              return MaterialPageRoute(
+                builder: (context) => SplashScreen(),
+              );
+            }
         }
       },
-      initialRoute: AppRoutes.LoginRoute,
+      initialRoute: AppRoutes.splashRoute,
     );
   }
 }
